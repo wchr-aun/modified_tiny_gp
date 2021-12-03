@@ -15,7 +15,9 @@ TOURNAMENT_SIZE = 10
 XO_RATE         = 0.7
 PROB_MUTATION   = 0.3
 FILE_NAME       = './cw1-q4-ds.txt' # File name
-ITERATIONS       = 10 # Amount of iterations to run. For 1 time run, set this value to 1
+LOG             = True # Allow logging the output
+LOG_FILE_NAME   = './question4_log.txt' # Log output file name
+ITERATIONS      = 1 # Amount of iterations to run. For 1 time run, set this value to 1
 
 def add(x, y): return x + y
 def mul(x, y): return x * y
@@ -52,14 +54,20 @@ FUNCTIONS = [exp, abso]
 TERMINALS = ['x', 'y', 1, 2, 3, 4, 10, 100, math.pi]
 
 def clearLog():
-  f = open('./lg.txt', 'w')
-  f.write('')
-  f.close()
+  if LOG:
+    f = open(LOG_FILE_NAME, 'w')
+    f.write('')
+    f.close()
 
 def log(s):
-  f = open('./lg.txt', 'a')
-  f.write(s +'\n')
-  f.close()
+  if LOG:
+    f = open(LOG_FILE_NAME, 'a')
+    f.write(s +'\n')
+    f.close()
+
+def print_and_log(s):
+  print(s)
+  log(s)
 
 def generate_dataset():
   f = open(FILE_NAME, 'r')
@@ -243,9 +251,9 @@ def main():
   raw_fitness = 1 / (1 + mean([abs(best_of_run.compute_tree(ds[0], ds[1]) - ds[2]) for ds in dataset]))
   # print('-------------------------------------------------')
   print(f'-END OF RUN-\n')
-  print(f'best_of_run attained at generation {best_of_run_gen}th of {restart_count}th restart.')
-  print(f'Have the fitness value of {round(best_of_run_f, 3)} and raw fitness value of {round(raw_fitness, 3)}')
-  print(f'Final Formula: {best_of_run.formula()}')
+  print_and_log(f'best_of_run attained at generation {best_of_run_gen}th of {restart_count}th restart.')
+  print_and_log(f'Have the fitness value of {round(best_of_run_f, 3)} and raw fitness value of {round(raw_fitness, 3)}')
+  print_and_log(f'Final Formula: {best_of_run.formula()}')
   return raw_fitness
 
 if __name__== '__main__':
@@ -253,17 +261,17 @@ if __name__== '__main__':
   times = []
   _fitnesses = []
   for i in range(ITERATIONS):
-    print('-------------------------------------------------')
-    print(f'-START OF {i + 1}th RUN-\n')
+    print_and_log('-------------------------------------------------')
+    print_and_log(f'-START OF {i + 1}th RUN-\n')
     start = time.time()
     _fitnesses.append(main())
     end = time.time()
-    print(f'Time taken: {int((end - start) / 60)}:{str(int(end - start) % 60).zfill(2)} min\n')
+    print_and_log(f'Time taken: {int((end - start) / 60)}:{str(int(end - start) % 60).zfill(2)} min\n')
     times.append(end - start)
-    print(f'-END OF {i + 1}th RUN-\n')
-    print('-------------------------------------------------')
+    print_and_log(f'-END OF {i + 1}th RUN-\n')
+    print_and_log('-------------------------------------------------')
   avg_time = np.array(times).mean()
   avg_fitness = np.array(_fitnesses).mean()
-  print(f'\n\nAverage runtime over 10 runs is {int((avg_time) / 60)}:{str(int(avg_time) % 60).zfill(2)} min')
-  print(f'Average fitness over 10 runs is {avg_fitness}')
-  print(f'Average error over 10 runs is {1-avg_fitness}')
+  print_and_log(f'\n\nAverage runtime over {ITERATIONS} runs is {int((avg_time) / 60)}:{str(int(avg_time) % 60).zfill(2)} min')
+  print_and_log(f'Average fitness over {ITERATIONS} runs is {avg_fitness}')
+  print_and_log(f'Average error over {ITERATIONS} runs is {1-avg_fitness}')
